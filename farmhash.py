@@ -21,17 +21,18 @@ def string_to_int64(string):
     ctypes.memmove(ctypes.addressof(c_int), string, ctypes.sizeof(c_int))
     return c_int
 
+# converts string to u_int32
 def string_to_int32(string):
     c_int = ctypes.c_uint32()
     ctypes.memmove(ctypes.addressof(c_int), string, ctypes.sizeof(c_int))
     return c_int
 
-def hash_len0to64(message, length):
+# hashes a string of max length 16
+def hash_string16(message, length):
     c_k0 = ctypes.c_uint64(k0)
     c_k2 = ctypes.c_uint64(k2)
     c_string = ctypes.c_char_p(message)
     if(length >= 8):
-
         multiplier = ctypes.c_uint64(c_k2.value + length * 2)
         a = ctypes.c_uint64(string_to_int64(c_string).value + c_k2.value)
         b = ctypes.c_uint64(string_to_int64(c_string).value + length - 8)
@@ -55,7 +56,7 @@ def hash_len0to64(message, length):
         return ctypes.c_uint64(total_shifted)
     return c_k2        
 
-
+# helper method that shifts bits of max length 16 string
 def hash_len16(u, v, mult):
     a = ctypes.c_uint64((u.value ^ v.value) * mult.value)
     a.value ^= (a.value >> 47)
@@ -64,17 +65,12 @@ def hash_len16(u, v, mult):
     b.value *= mult.value
     return b
 
-
-def rotate64(val, shift):
-    return val << shift
-
-# num_in = 0 
 # while(num_in != -1):
 #     print("Enter a number to hash")
 #     num = int(input())
 #     fmix(num)
 
-test_strings = ['hi', 'yes', 'GameOfThrones', 'YoThere', 'Hello']
+test_strings = ['hi', 'yes', 'GameOfThrones', 'YoThere', 'Hello', "aoijdoijadoiajdoijdaodijdoijsoidjaoidjsoij"]
 
 for s in test_strings:
-    print(s + ": " + str(hash_len0to64(s, len(s)).value))
+    print(s + ": " + str(hash_string16(s, len(s)).value))
