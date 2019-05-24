@@ -35,7 +35,7 @@ def hash_string16(message, length):
     # print(message)
     c_k0 = ctypes.c_uint64(k0)
     c_k2 = ctypes.c_uint64(k2)
-    c_string = ctypes.c_char_p(message)
+    c_string = ctypes.c_wchar_p(message)
     if(length >= 8):
         multiplier = ctypes.c_uint64(c_k2.value + length * 2)
         a = ctypes.c_uint64(string_to_int64(c_string).value + c_k2.value)
@@ -49,7 +49,7 @@ def hash_string16(message, length):
         b = ctypes.c_uint64(string_to_int64(c_string).value + length - 4)
         a.value = 3 + a.value << 3
         return hash_len16(a, b, multiplier)
-    if(len > 0):
+    if(length > 0):
         a = string_to_int32(message[0])
         b = string_to_int32(message[length >> 1])
         c = string_to_int32(message[length - 1])
@@ -78,7 +78,7 @@ def random_string(string_length):
 #     num = int(input())
 #     fmix(num)
 
-def time_trial(string_length):
+def time_trial(string_length, out_file):
     strings = generate_random_array(string_length)
     init_time = time.time()
     for s in strings:
@@ -87,6 +87,7 @@ def time_trial(string_length):
     end_time = time.time()
     total_time = end_time - init_time
     print(str(string_length) + '\t' + str(total_time) )
+    out_file.write(str(total_time) + '\n')
     
 
 def generate_random_array(string_length):
@@ -99,12 +100,14 @@ def generate_random_array(string_length):
     return rand_array
 
 def time_tests():
+    out_file = open('out.txt','w')
     print('Size\tTime (s)')
     i = 1
-    while i <= 16:
-        time_trial(i)
+    while i <= 100:
+        time_trial(i, out_file)
         i += 1
     print('End of Time Trials')
+    out_file.close()
 
 time_tests()
 # print(random_string(5)[0])
