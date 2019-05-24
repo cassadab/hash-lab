@@ -1,6 +1,9 @@
 # Farmhash function
 import constants
 import ctypes
+import time
+import string
+import random
 from constants import k2, k0
 
 def fmix(input):
@@ -29,6 +32,7 @@ def string_to_int32(string):
 
 # hashes a string of max length 16
 def hash_string16(message, length):
+    # print(message)
     c_k0 = ctypes.c_uint64(k0)
     c_k2 = ctypes.c_uint64(k2)
     c_string = ctypes.c_char_p(message)
@@ -65,12 +69,42 @@ def hash_len16(u, v, mult):
     b.value *= mult.value
     return b
 
+def random_string(string_length):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(string_length))
+
 # while(num_in != -1):
 #     print("Enter a number to hash")
 #     num = int(input())
 #     fmix(num)
 
-test_strings = ['hi', 'yes', 'GameOfThrones', 'YoThere', 'Hello', "aoijdoijadoiajdoijdaodijdoijsoidjaoidjsoij"]
+def time_trial(string_length):
+    strings = generate_random_array(string_length)
+    init_time = time.time()
+    for s in strings:
+        # print(s)
+        hash_string16(s, len(s))
+    end_time = time.time()
+    total_time = end_time - init_time
+    print(str(string_length) + '\t' + str(total_time) )
+    
 
-for s in test_strings:
-    print(s + ": " + str(hash_string16(s, len(s)).value))
+def generate_random_array(string_length):
+    i = 0
+    rand_array = [None] * 1000
+    while i < 1000:
+        rand_string = random_string(string_length)
+        rand_array[i] = rand_string
+        i += 1
+    return rand_array
+
+def time_tests():
+    print('Size\tTime (s)')
+    i = 1
+    while i <= 16:
+        time_trial(i)
+        i += 1
+    print('End of Time Trials')
+
+time_tests()
+# print(random_string(5)[0])
